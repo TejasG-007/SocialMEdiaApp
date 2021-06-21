@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1031824059792",
+    "project_id": "socialmediaapp-9bc26",
+    "storage_bucket": "socialmediaapp-9bc26.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031824059792:android:062d6451fd3fb442c99715",
+        "android_client_info": {
+          "package_name": "tejasg.socialmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031824059792-nk2vo6hlqv7bl2asn1kg8u2ogk9m6b99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxj-9PfAci5xwDIb5V6WKXXe7tcWRzkls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031824059792-nk2vo6hlqv7bl2asn1kg8u2ogk9m6b99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
