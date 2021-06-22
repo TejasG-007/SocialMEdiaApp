@@ -390,7 +390,7 @@ ScrollController commentscroll = ScrollController();
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
                                                   children: [
-                                                    Text("${data[index]["likes"].length}",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 16),),
+                                                    Text("${data[index]["likes"].length} likes",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 16),),
                                                     SizedBox(width: 2,),
                                                     GestureDetector(
                                                         onTap: () async{
@@ -624,7 +624,20 @@ ScrollController commentscroll = ScrollController();
                         }),
                   ),
                 ),
-               FirebaseAuth.instance.currentUser.email.substring(0,1)=="e"?Row(
+               FirebaseAuth.instance.currentUser.email.substring(0,2)=="s1" || FirebaseAuth.instance.currentUser.email.substring(0,2)=="s2"?FloatingActionButton.extended(
+                 heroTag: "sending_post",
+                 icon: Icon(Icons.add_a_photo,),
+                 label: Text("Post Something"),
+                 onPressed: () {
+                   Provider.of<BusyButtonModel>(context, listen: false)
+                       .setBusy = false;
+                   Provider.of<GetImage>(context, listen: false).myfile = null;
+                   Navigator.push(
+                       context,
+                       SlideRightRoute(
+                           widget: CreatePost(username, profileimg_url)));
+                 },
+               ):Row(
                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                  children: [
                    FloatingActionButton.extended(
@@ -656,20 +669,7 @@ ScrollController commentscroll = ScrollController();
                                widget: CreateAlert(username, profileimg_url)));
                      },
                    )
-                 ],):FloatingActionButton.extended(
-                 heroTag: "sending_post",
-                 icon: Icon(Icons.add_a_photo,),
-                 label: Text("Post Something"),
-                 onPressed: () {
-                   Provider.of<BusyButtonModel>(context, listen: false)
-                       .setBusy = false;
-                   Provider.of<GetImage>(context, listen: false).myfile = null;
-                   Navigator.push(
-                       context,
-                       SlideRightRoute(
-                           widget: CreatePost(username, profileimg_url)));
-                 },
-               ),
+                 ],),
               ])),
         ),
       ),

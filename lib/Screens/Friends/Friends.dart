@@ -172,7 +172,7 @@ class _FriendsState extends State<Friends> {
                                               const EdgeInsets.all(8.0),
                                               child: Row(
                                                 children: [
-                                                  Text("${data[index]["likes"].length}",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 16),),
+                                                  Text("${data[index]["likes"].length} ",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 16),),
                                                   SizedBox(width: 2,),
                                                   GestureDetector(
                                                       onTap: () async{
@@ -389,7 +389,7 @@ class _FriendsState extends State<Friends> {
                                             SizedBox(
                                               width: 5,
                                             ),
-                                            FirebaseAuth.instance.currentUser.email.substring(0,1)=="e"?GestureDetector(
+                                            FirebaseAuth.instance.currentUser.email.substring(0,2)=="s1" || FirebaseAuth.instance.currentUser.email.substring(0,2)=="s2"?Container():GestureDetector(
                                               child: Row(children: [
                                                 Icon(Icons.remove_red_eye,color: Colors.green,),SizedBox(width: 4,),Text("Watch list"),
                                               ],),
@@ -411,7 +411,7 @@ class _FriendsState extends State<Friends> {
                                                   ),itemCount: data[index]["likes"].length,),
                                                 ) ));
                                               },
-                                            ):Container(),
+                                            ),
 
                                             SizedBox(width: 20,)
                                           ],

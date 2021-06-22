@@ -19,7 +19,7 @@ import '../../locator.dart';
 List<Map> drawerItems = [
   {
     'icon': FontAwesomeIcons.edit,
-    'title': "Edit Profile",
+    'title': "Show Profile",
   },
   {'icon': Icons.report_problem_outlined, 'title': 'Alert'},
   {'icon': FontAwesomeIcons.bell, 'title': 'Notifications'},
@@ -161,7 +161,7 @@ class _DrawerScreenState extends State<DrawerScreen> with TickerProviderStateMix
                                           SlideRightRoute(
                                               widget: Notifications()));
                                       break;
-                                    case "Edit Profile":
+                                    case "Show Profile":
                                       Navigator.push(
                                           context,
                                           SlideRightRoute(

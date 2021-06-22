@@ -24,6 +24,8 @@ class _MessageScreenState extends State<MessageScreen> {
      username = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.email).get();
   }
 
+
+
   @override
   void initState() {
     getusername();
@@ -92,6 +94,9 @@ class _MessageScreenState extends State<MessageScreen> {
                                               child: Padding(
                                                 padding: EdgeInsets.all(5),
                                                 child: TextFormField(
+                                                  onChanged: (val){
+                                                    if(val.length!=0){Provider.of<MessageModel>(context,listen: false).userSearch(val);}
+                                                  },
                                                   cursorHeight: 25,
                                                   controller: search,
                                                   decoration: InputDecoration(
@@ -120,59 +125,49 @@ class _MessageScreenState extends State<MessageScreen> {
                                               ),
                                             ),
                                           ),
-                                          Expanded(
-                                              flex: 1,
-                                              child: Consumer<MessageModel>(
-                                                  builder:
-                                                      (contex, model, child) {
-                                                return FloatingActionButton(
-                                                  heroTag: "search",
-                                                  child: Icon(Icons.search),
-                                                  onPressed: () {},
-                                                );
-                                              })),
                                         ],
                                       ),
-                                      StreamBuilder(
-                                        builder: (context, Snapshot) {
-                                          if (Snapshot.hasData) {
-                                            if (Snapshot.data.docs.length > 0) {
-                                              return Row(
+
+                                      Consumer<MessageModel>(
+                                        builder: (context,model,child){
+                                          return model.tempsearchstore.length>0?ListView.builder(
+                                            shrinkWrap: true,
+                                            itemBuilder:(context,index)=>
+                                              Row(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 20,
-                                                            vertical: 5),
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 5),
                                                     child: CircleAvatar(
                                                         backgroundColor:
-                                                            Colors.white,
+                                                        Colors.white,
                                                         radius: 35,
-                                                        child: Snapshot.data
-                                                                        .docs[0]
-                                                                    [
-                                                                    "profile_img_url"] !=
-                                                                null
+                                                        child: model.tempsearchstore[index]
+                                                        [
+                                                        "profile_img_url"] !=
+                                                            null
                                                             ? Container(
-                                                                height: 64,
-                                                                width: 70,
-                                                                decoration: BoxDecoration(
-                                                                    color: Colors.teal,
-                                                                    borderRadius: BorderRadius.circular(100),
-                                                                    image: DecorationImage(
-                                                                        fit: BoxFit.fill,
-                                                                        image: Image.network(
-                                                                          "${Snapshot.data.docs[0]["profile_img_url"]}",
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                        ).image)))
+                                                            height: 64,
+                                                            width: 70,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.teal,
+                                                                borderRadius: BorderRadius.circular(100),
+                                                                image: DecorationImage(
+                                                                    fit: BoxFit.fill,
+                                                                    image: Image.network(
+                                                                      "${model.tempsearchstore[index]["profile_img_url"]}",
+                                                                      fit: BoxFit
+                                                                          .fill,
+                                                                    ).image)))
                                                             : Icon(Icons.person_pin)),
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 10),
                                                     child: MouseRegion(
                                                       cursor: SystemMouseCursors
@@ -180,21 +175,21 @@ class _MessageScreenState extends State<MessageScreen> {
                                                       child: GestureDetector(
                                                         onTap: () async{
 
-                                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.purple,content: Text("Chat with ${Snapshot.data.docs[0]["full_name"]}",style:TextStyle(color: Colors.white),)));
+                                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.purple,content: Text("Chat with ${model.tempsearchstore[index]["full_name"]}",style:TextStyle(color: Colors.white),)));
                                                           await FirebaseFirestore.instance
                                                               .collection("users")
                                                               .doc(FirebaseAuth.instance.currentUser.email)
-                                                              .collection("ChatRoom").doc(Snapshot.data.docs[0]["username"]).set({
-                                                            "username":Snapshot.data.docs[0]["username"],
-                                                            "email":Snapshot.data.docs[0]["email"],
-                                                            "uid":Snapshot.data.docs[0]["uid"],
-                                                            "profile_img_url":Snapshot.data.docs[0]["profile_img_url"],
-                                                            "full_name":Snapshot.data.docs[0]["full_name"],
+                                                              .collection("ChatRoom").doc(model.tempsearchstore[index]["username"]).set({
+                                                            "username":model.tempsearchstore[index]["username"],
+                                                            "email":model.tempsearchstore[index]["email"],
+                                                            "uid":model.tempsearchstore[index]["uid"],
+                                                            "profile_img_url":model.tempsearchstore[index]["profile_img_url"],
+                                                            "full_name":model.tempsearchstore[index]["full_name"],
                                                             "last_message":""
                                                           });
                                                           await FirebaseFirestore.instance
                                                               .collection("users")
-                                                              .doc(Snapshot.data.docs[0]["email"])
+                                                              .doc(model.tempsearchstore[index]["email"])
                                                               .collection("ChatRoom").doc(username["username"]).set({
                                                             "username":username["username"],
                                                             "email":username["email"],
@@ -204,14 +199,14 @@ class _MessageScreenState extends State<MessageScreen> {
                                                             "last_message":""
                                                           });
                                                           await FirebaseFirestore.instance.collection("users").doc(
-                                                            FirebaseAuth.instance.currentUser.email
-                                                          ).collection("ChatRoom").doc(Snapshot.data.docs[0]["username"]).collection("Messages").add({
+                                                              FirebaseAuth.instance.currentUser.email
+                                                          ).collection("ChatRoom").doc(model.tempsearchstore[index]["username"]).collection("Messages").add({
                                                             "text":"Hello!",
-                                                            "uid":Snapshot.data.docs[0]["uid"],
+                                                            "uid":model.tempsearchstore[index]["uid"],
                                                             "timestamp":DateTime.now().microsecondsSinceEpoch,
                                                           });
                                                           await FirebaseFirestore.instance.collection("users").doc(
-                                                              Snapshot.data.docs[0]["email"]
+                                                              model.tempsearchstore[index]["email"]
                                                           ).collection("ChatRoom").doc(username["username"]).collection("Messages").add({
                                                             "text":"Hey..!",
                                                             "uid":FirebaseAuth.instance.currentUser.uid,
@@ -219,36 +214,34 @@ class _MessageScreenState extends State<MessageScreen> {
                                                           });
                                                           width > small
                                                               ? model
-                                                                  .onClickOpen(
-                                                                      550,
-                                                                      0,
-                                                                      1,
-                                                                      true)
+                                                              .onClickOpen(
+                                                              550,
+                                                              0,
+                                                              1,
+                                                              true)
                                                               : Navigator.push(
-                                                                  context,
-                                                                  SlideRightRoute(
-                                                                      widget:
-                                                                          UserMessageScreen(data:Snapshot.data.docs[0],username:username["username"])));
+                                                              context,
+                                                              SlideRightRoute(
+                                                                  widget:
+                                                                  UserMessageScreen(data:model.tempsearchstore[index],username:username["username"])));
                                                         },
                                                         child: Column(
                                                           children: [
-                                                            Snapshot.data.docs[
-                                                                            0][
-                                                                        "full_name"] !=
-                                                                    null
+                                                            model.tempsearchstore[index][
+                                                            "full_name"] !=
+                                                                null
                                                                 ? Text(
-                                                                    Snapshot.data
-                                                                            .docs[0]
-                                                                        [
-                                                                        "full_name"],
-                                                                    style: Theme.of(
-                                                                            context)
-                                                                        .textTheme
-                                                                        .headline2
-                                                                        .copyWith(
-                                                                            color:
-                                                                                Colors.black,
-                                                                            fontSize: 16))
+                                                                model.tempsearchstore[index]
+                                                                [
+                                                                "full_name"],
+                                                                style: Theme.of(
+                                                                    context)
+                                                                    .textTheme
+                                                                    .headline2
+                                                                    .copyWith(
+                                                                    color:
+                                                                    Colors.black,
+                                                                    fontSize: 16))
                                                                 : Container(),
                                                             Row(
                                                               children: [
@@ -263,13 +256,13 @@ class _MessageScreenState extends State<MessageScreen> {
                                                                 Text(
                                                                     "Send Message to ..!!",
                                                                     style: Theme.of(
-                                                                            context)
+                                                                        context)
                                                                         .textTheme
                                                                         .bodyText2
                                                                         .copyWith(
-                                                                            color:
-                                                                                Colors.black,
-                                                                            fontSize: 14))
+                                                                        color:
+                                                                        Colors.black,
+                                                                        fontSize: 14))
                                                               ],
                                                             )
                                                           ],
@@ -278,17 +271,17 @@ class _MessageScreenState extends State<MessageScreen> {
                                                     ),
                                                   )
                                                 ],
-                                              );
-                                            }
-                                          }
-                                          return LinearProgressIndicator();
+                                              ),
+                                            itemCount: model.tempsearchstore.length,
+
+
+
+
+                                          ):LinearProgressIndicator();
                                         },
-                                        stream: FirebaseFirestore.instance
-                                            .collection("users")
-                                            .where("username",
-                                                isEqualTo: search.text)
-                                            .snapshots(),
-                                      )
+
+                                      ),
+
                                     ],
                                   ),
                                   decoration: BoxDecoration(

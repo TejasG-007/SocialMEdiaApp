@@ -180,6 +180,18 @@ class _GettingStartedState extends State<GettingStarted> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(Icons.report_gmailerrorred_outlined,color: Colors.redAccent,),
+              Container(
+                padding:EdgeInsets.all(5),
+                child:Text("Once Entered Info Cannot Allow to change later...",style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.red,fontSize: 14),),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width*0.7
+                ),
+              )
+            ],),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               Provider.of<GetImage>(context).myfile != null
                   ? Text(
                       "${Provider.of<GetImage>(context).myfile.fileName}",
@@ -363,45 +375,57 @@ class _GettingStartedState extends State<GettingStarted> {
             backgroundColor: Colors.purpleAccent,
             child: Icon(Icons.arrow_forward),
             onPressed: () async {
-              if (profile_img_url != null &&
-                  username.text != null &&
-                  full_name.text != null &&
-                  dob.text != null) {
-                await FirebaseFirestore.instance
-                    .collection("users")
-                    .doc("${FirebaseAuth.instance.currentUser.email}")
-                    .collection("UserDetails")
-                    .doc("user_detail")
-                    .set({
-                  "uid":FirebaseAuth.instance.currentUser.uid,
-                  "username": username.text,
-                  "full_name": full_name.text,
-                  "DOB": dob.text,
-                  "profile_img_url": profile_img_url,
-                  "gender": Provider.of<GenderSelection>(context, listen: false)
-                      .gender,
-                }).then((value) async {
-                  await FirebaseFirestore.instance
-                      .collection("users")
-                      .doc("${FirebaseAuth.instance.currentUser.email}")
-                      .set({
+              await FirebaseFirestore.instance.collection("users").where("username",isEqualTo:username.text.toLowerCase()).get().then((value)async{
+                 if(value.docs.length<=0){
+                   if (profile_img_url != null &&
+                       username.text != null &&
+                       full_name.text != null &&
+                       dob.text != null) {
+                     await FirebaseFirestore.instance
+                         .collection("users")
+                         .doc("${FirebaseAuth.instance.currentUser.email}")
+                         .collection("UserDetails")
+                         .doc("user_detail")
+                         .set({
+                       "uid":FirebaseAuth.instance.currentUser.uid,
+                       "username": username.text.toLowerCase(),
+                       "full_name": full_name.text.substring(0,1).toUpperCase()+full_name.text.substring(1),
+                       "DOB": dob.text,
+                       "searchKey":full_name.text.substring(0,1).toUpperCase(),
+                       "profile_img_url": profile_img_url,
+                       "gender": Provider.of<GenderSelection>(context, listen: false)
+                           .gender,
+                     }).then((value) async {
+                       await FirebaseFirestore.instance
+                           .collection("users")
+                           .doc("${FirebaseAuth.instance.currentUser.email}")
+                           .set({
 
-                    "uid":FirebaseAuth.instance.currentUser.uid,
-                    "email":FirebaseAuth.instance.currentUser.email,
-                    "profile_img_url": profile_img_url,
-                    "username": username.text,
-                    "gender": Provider.of<GenderSelection>(context, listen: false)
-                        .gender,
-                    "full_name": full_name.text,
-                    "DOB": dob.text,
-                    "getting_started": true,
-                  });
-                });
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    backgroundColor: Colors.teal,
-                    content: Text("Please Wait While Uploading Profile Image or Check Fields")));
-              }
+                         "uid":FirebaseAuth.instance.currentUser.uid,
+                         "email":FirebaseAuth.instance.currentUser.email,
+                         "profile_img_url": profile_img_url,
+                         "username": username.text,
+                         "gender": Provider.of<GenderSelection>(context, listen: false)
+                             .gender,
+                         "searchKey":full_name.text.substring(0,1).toUpperCase(),
+                         "full_name": full_name.text.substring(0,1).toUpperCase()+full_name.text.substring(1),
+                         "DOB": dob.text,
+                         "getting_started": true,
+                       });
+                     });
+                   } else {
+                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                         backgroundColor: Colors.teal,
+                         content: Text("Please Wait While Uploading Profile Image or Check Fields")));
+                   }
+              }else{
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                       backgroundColor: Colors.teal,
+                       content: Text("Username is already taken please try again.")));
+                 }}
+              );
+              
+
 
               // Navigator.push(context,SlideRightRoute(widget:HomeView()));
             })
