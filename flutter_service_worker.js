@@ -3,11 +3,12 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "009bdca427064423a8c1be1cb23a712a",
+  "assets/AssetManifest.json": "9a65f7eb1d5c43fc8be3e4de2d77b249",
 "assets/assets/fonts/Montserrat-Light.ttf": "409c7f79a42e56c785f50ed37535f0be",
 "assets/assets/fonts/Nunito-Regular.ttf": "d8de52e6c5df1a987ef6b9126a70cfcc",
 "assets/assets/Images/logo.jpeg": "dde1d6481008ecf444734cd1504c04da",
 "assets/assets/Images/profilepic.jpg": "9e27ea1e34599a47b429c1df6b491aa7",
+"assets/assets/Images/qa.png": "f27c77ad73f74da24b0865026d4ffedf",
 "assets/assets/Images/sample.PNG": "3882eff27b2462a99d611ea4b2513e81",
 "assets/assets/Lottie/Gloading.json": "d257d4f701b5eae0379ff8974cf83dec",
 "assets/assets/Lottie/registerui.json": "d257d4f701b5eae0379ff8974cf83dec",
@@ -25,9 +26,9 @@ const RESOURCES = {
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
-"index.html": "2173d57a111b4c55ff29d74fb5eebaf1",
-"/": "2173d57a111b4c55ff29d74fb5eebaf1",
-"main.dart.js": "2c24e26119c764cd35bf64d41f04f4b5",
+"index.html": "5bfff9c806a0cd1ad803569bb00c33ed",
+"/": "5bfff9c806a0cd1ad803569bb00c33ed",
+"main.dart.js": "833a0d2294bd587adabf97d4f3b94d15",
 "manifest.json": "b9f5902abddff048dbf4eeb66b8fa814",
 "version.json": "e9a7577bbe1d008ad8e956790439d287"
 };
