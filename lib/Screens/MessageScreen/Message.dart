@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -30,6 +31,12 @@ class _MessageScreenState extends State<MessageScreen> {
   void initState() {
     getusername();
     super.initState();
+  }
+  @override
+  void dispose() {
+    search.dispose();
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -65,7 +72,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     SizedBox(
                       width: 70,
                     ),
-                    Text("Messages",
+                    Text("Chat-Room",
                         style: Theme.of(context)
                             .textTheme
                             .headline2
@@ -77,60 +84,67 @@ class _MessageScreenState extends State<MessageScreen> {
                       padding: const EdgeInsets.only(top: 10),
                       child: FloatingActionButton(
                         heroTag: "search",
+                        tooltip: "Search User",
                         backgroundColor: Colors.teal,
                         onPressed: () {
                           showModalBottomSheet(
                               backgroundColor: Colors.transparent,
                               context: context,
                               builder: (context) {
-                                return Container(
+                                return  Consumer<MessageModel>(
+                                  builder: (context,model,child)=>Container(
                                   child: Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 4,
-                                            child: Form(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(5),
-                                                child: TextFormField(
-                                                  onChanged: (val){
-                                                    if(val.length!=0){Provider.of<MessageModel>(context,listen: false).userSearch(val);}
-                                                  },
-                                                  cursorHeight: 25,
-                                                  controller: search,
-                                                  decoration: InputDecoration(
-                                                      border: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  10),
-                                                          borderSide: BorderSide(
-                                                              color: Colors
-                                                                  .purple)),
-                                                      disabledBorder: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  10),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .purple)),
-                                                      enabledBorder: OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  10),
-                                                          borderSide:
-                                                              BorderSide(color: Colors.teal))),
+                                     Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 4,
+                                              child: Form(
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: TextFormField(
+                                                    onChanged: (val){
+                                                      if(val.length!=0){
+                                                        model.userSearch(val);
+                                                      }
+                                                    },
+                                                    cursorHeight: 25,
+                                                    controller: search,
+                                                    decoration: InputDecoration(
+                                                      hintText: "Search User",
+                                                        prefixIcon:Icon(Icons.search_outlined,color: Colors.teal,),
+                                                        suffixIcon: GestureDetector(
+
+                                                          child: Icon(Icons.send,color: Colors.teal,),
+                                                        ),
+                                                        border: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    10),
+                                                            borderSide: BorderSide(
+                                                                color: Colors
+                                                                    .purple)),
+                                                        disabledBorder: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    10),
+                                                            borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .purple)),
+                                                        enabledBorder: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                    10),
+                                                            borderSide:
+                                                                BorderSide(color: Colors.teal))),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      Consumer<MessageModel>(
-                                        builder: (context,model,child){
-                                          return model.tempsearchstore.length>0?ListView.builder(
+                                          ],
+                                        ),
+                                     model.tempsearchstore!=null?ListView.builder(
                                             shrinkWrap: true,
                                             itemBuilder:(context,index)=>
                                               Row(
@@ -212,18 +226,31 @@ class _MessageScreenState extends State<MessageScreen> {
                                                             "uid":FirebaseAuth.instance.currentUser.uid,
                                                             "timestamp":DateTime.now().microsecondsSinceEpoch,
                                                           });
-                                                          width > small
-                                                              ? model
-                                                              .onClickOpen(
-                                                              550,
-                                                              0,
-                                                              1,
-                                                              true)
-                                                              : Navigator.push(
-                                                              context,
-                                                              SlideRightRoute(
-                                                                  widget:
-                                                                  UserMessageScreen(data:model.tempsearchstore[index],username:username["username"])));
+                                                         if(kIsWeb){
+                                                           showDialog(context: context, builder:(context)=>
+                                                           AlertDialog(
+                                                             content: Column(
+                                                               mainAxisSize: MainAxisSize.min,
+                                                               children: [
+                                                                 Icon(Icons.message,color: Colors.green,size: height/8,),
+                                                                 SizedBox(height: 10,),
+                                                                 Text("Conversation is Created Please Check ChatRoom")
+                                                               ],
+                                                             ),
+                                                             actions: [
+                                                               TextButton(onPressed: (){
+                                                                 Navigator.pop(context);
+                                                               }, child: Text("OK"))
+                                                             ],
+                                                           )
+                                                           );
+                                                         }else{
+                                                           Navigator.push(
+                                                               context,
+                                                               SlideRightRoute(
+                                                                   widget:
+                                                                   UserMessageScreen(data:model.tempsearchstore[index],username:username["username"])));
+                                                         }
                                                         },
                                                         child: Column(
                                                           children: [
@@ -277,10 +304,9 @@ class _MessageScreenState extends State<MessageScreen> {
 
 
 
-                                          ):LinearProgressIndicator();
-                                        },
-
-                                      ),
+                                          ):LinearProgressIndicator(
+                                       backgroundColor: Colors.teal,
+                                     ),
 
                                     ],
                                   ),
@@ -289,7 +315,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                       borderRadius: BorderRadius.only(
                                           topRight: Radius.circular(10),
                                           topLeft: Radius.circular(10))),
-                                );
+                                ));
                               });
                         },
                         child: Icon(
@@ -419,12 +445,12 @@ class _MessageScreenState extends State<MessageScreen> {
                                             SizedBox(
                                               width: 5,
                                             ),
-                                            Text("Send Message to ..!!",
+                                            Text("Start Conversation",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyText2
                                                     .copyWith(
-                                                        color: Colors.black,
+                                                        color: Colors.green,
                                                         fontSize: 14))
                                           ],
                                         )

@@ -13,6 +13,7 @@ import 'package:socialmedia/FirbaseServices/ImageSender/ImageSender.dart';
 import 'package:socialmedia/Screens/Drawer/DraweModel.dart';
 import 'package:socialmedia/Screens/Drawer/ImagePicker.dart';
 import 'package:socialmedia/Screens/MessageScreen/Message.dart';
+import 'package:socialmedia/Screens/QandA/QandA.dart';
 import 'package:socialmedia/Widgets/BusyButton.dart';
 import 'package:socialmedia/Widgets/BusyButtonModel.dart';
 import 'package:socialmedia/Widgets/Loading.dart';
@@ -30,7 +31,7 @@ class _FeedScreenState extends State<FeedScreen> {
   TextEditingController comment = TextEditingController();
   var doc;
 
-  String username, profileimg_url,fullname;
+  String username, profileimg_url, fullname;
   getdata() async {
     doc = await FirebaseFirestore.instance
         .collection("users")
@@ -48,7 +49,8 @@ class _FeedScreenState extends State<FeedScreen> {
     getdata();
     super.initState();
   }
-ScrollController commentscroll = ScrollController();
+
+  ScrollController commentscroll = ScrollController();
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -103,15 +105,25 @@ ScrollController commentscroll = ScrollController();
                                 SizedBox(
                                   width: 60,
                                 ),
-                                Icon(
-                                  FontAwesomeIcons.coffee,
-                                  color: Colors.white,
+                                FloatingActionButton(
+                                  tooltip: "Questions and Answers",
+                                  onPressed: (){
+                                  Navigator.push(context,SlideRightRoute(widget:
+                                  QandAView()
+                                  ));
+                                },
+                                  backgroundColor: Colors.teal,
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: Colors.teal,
+                                  backgroundImage: AssetImage("assets/Images/qa.png"),
+                                ),
                                 ),
                                 SizedBox(
-                                  width: 10,
+                                  width: 20,
                                 ),
                                 width > small
-                                    ? Text("Feed and Posts",
+                                    ? Text("   Feed News",
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline2
@@ -327,18 +339,80 @@ ScrollController commentscroll = ScrollController();
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              "${data[index]["username"]}",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline2
-                                                  .copyWith(
-                                                      fontSize: 16,
-                                                      color: Colors.black),
-                                            ),
-                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "${data[index]["username"]}",
+                                                    style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14),
+                                                  ),
+                                                  Text(
+                                                    "${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"], isUtc: false).toString().substring(0, 16)}",
+                                                    style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 10),
+                                                  )
+                                                ],
+                                              ),
+                                              data[index]["email"]==FirebaseAuth.instance.currentUser.email?PopupMenuButton(itemBuilder: (context)=>[
+                                              PopupMenuItem(
+                                                  
+                                                  child: GestureDetector(
+                                                      onTap:()async{
+                                                        return showDialog(context: context, builder:(context){
+                                                          return AlertDialog(
+                                                            content: Text("Do you really want to delete this post ?"),
+                                                            actions: [
+                                                              TextButton(onPressed: ()async{
+                                                                await FirebaseFirestore.instance.collection("post").doc(data[index].reference.id).delete().then((value) {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  showDialog(
+                                                                      context: context,
+                                                                      builder: (
+                                                                          context) =>
+
+                                                                          AlertDialog(
+                                                                            content: Column(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                Icon(
+                                                                                  Icons
+                                                                                      .done,
+                                                                                  color: Colors
+                                                                                      .green,
+                                                                                  size: height /
+                                                                                      8,),
+                                                                                SizedBox(
+                                                                                  height: 5,),
+                                                                                Text(
+                                                                                    "Succesfully Deleted")
+                                                                              ],),
+                                                                            actions: [
+                                                                              TextButton(
+                                                                                  onPressed: () {
+                                                                                    Navigator
+                                                                                        .pop(
+                                                                                        context);
+                                                                                  },
+                                                                                  child: Text(
+                                                                                      "Close"))
+                                                                            ],
+                                                                          )
+                                                                  );
+                                                                });
+                                                              }, child:Text("Yes")),
+                                                              TextButton(onPressed: (){
+                                                                Navigator.pop(context);
+                                                              }, child:Text("No")),
+                                                            ],
+                                                          );
+                                                        });
+                                                      },
+                                                      child: Container(child: Row(children: [Icon(Icons.delete),SizedBox(width: 10,),Text("Delete Post")],),)))
+                                            ]):Container(),
+                                          ],),
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
@@ -351,36 +425,41 @@ ScrollController commentscroll = ScrollController();
                                                       color: Colors.black),
                                             ),
                                           ),
-                                          data[index]["image_url"]!=null?Padding(
-                                              padding:
-                                              const EdgeInsets.all(8.0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  _showImage(data, index);
-                                                },
-                                                child: Container(
-                                                  height: kIsWeb ? 400 : 200,
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      50,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      BorderRadius.circular(
-                                                          15),
-                                                      color: Colors.white,
-                                                      image: DecorationImage(
-                                                        fit: BoxFit.fill,
-                                                        image: data[index][
-                                                        "image_url"] !=
-                                                            null
-                                                            ? Image.network(
-                                                            "${data[index]["image_url"]}")
-                                                            .image
-                                                            : Container(),
-                                                      )),
-                                                ),
-                                              )):Container(),
+                                          data[index]["image_url"] != null
+                                              ? Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      _showImage(data, index);
+                                                    },
+                                                    child: Container(
+                                                      height:
+                                                          kIsWeb ? 400 : 200,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              50,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          color: Colors.white,
+                                                          image:
+                                                              DecorationImage(
+                                                            fit: BoxFit.fill,
+                                                            image: data[index][
+                                                                        "image_url"] !=
+                                                                    null
+                                                                ? Image.network(
+                                                                        "${data[index]["image_url"]}")
+                                                                    .image
+                                                                : Container(),
+                                                          )),
+                                                    ),
+                                                  ))
+                                              : Container(),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -390,40 +469,82 @@ ScrollController commentscroll = ScrollController();
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
                                                   children: [
-                                                    Text("${data[index]["likes"].length} likes",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 16),),
-                                                    SizedBox(width: 2,),
+                                                    Text(
+                                                      "${data[index]["likes"].length} likes",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .headline2
+                                                          .copyWith(
+                                                              fontSize: 16),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
                                                     GestureDetector(
-                                                        onTap: () async{
-                                                          if(data[index]["likes"].contains("${FirebaseAuth.instance.currentUser.uid}")){
-                                                              await FirebaseFirestore.instance.collection("post").doc(data[index].reference.id).update(
-                                                                {
-                                                                  "likes":FieldValue.arrayRemove([
-                                                                  FirebaseAuth.instance.currentUser.uid
-                                                                  ])
-                                                                }
-                                                              );
-                                                              await Future.delayed(Duration(milliseconds: 300));
-                                                          }else{
-                                                            await FirebaseFirestore.instance.collection("post").doc(data[index].reference.id).update(
-                                                                {
-                                                                  "likes":FieldValue.arrayUnion([
-                                                                    FirebaseAuth.instance.currentUser.uid
-                                                                  ])
-                                                                }
-                                                            );
-                                                            await Future.delayed(Duration(milliseconds: 300));
-
+                                                        onTap: () async {
+                                                          if (data[index]
+                                                                  ["likes"]
+                                                              .contains(
+                                                                  "${FirebaseAuth.instance.currentUser.email}")) {
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    "post")
+                                                                .doc(data[index]
+                                                                    .reference
+                                                                    .id)
+                                                                .update({
+                                                              "likes": FieldValue
+                                                                  .arrayRemove([
+                                                                FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser
+                                                                    .email
+                                                              ])
+                                                            });
+                                                            await Future.delayed(
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        300));
+                                                          } else {
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    "post")
+                                                                .doc(data[index]
+                                                                    .reference
+                                                                    .id)
+                                                                .update({
+                                                              "likes": FieldValue
+                                                                  .arrayUnion([
+                                                                FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser
+                                                                    .email
+                                                              ])
+                                                            });
+                                                            await Future.delayed(
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        300));
                                                           }
                                                         },
-                                                        child: data[index]["likes"].contains("${FirebaseAuth.instance.currentUser.uid}")?Icon(
-                                                            FontAwesomeIcons
-                                                                .solidHeart,
-                                                            size: 20,
-                                                            color: Colors.red):Icon(
-                                                            FontAwesomeIcons.heart,
-                                                            size: 20,
-                                                            color: Colors.red)),
-
+                                                        child: data[index]
+                                                                    ["likes"]
+                                                                .contains(
+                                                                    "${FirebaseAuth.instance.currentUser.email}")
+                                                            ? Icon(
+                                                                FontAwesomeIcons
+                                                                    .solidHeart,
+                                                                size: 20,
+                                                                color:
+                                                                    Colors.red)
+                                                            : Icon(
+                                                                FontAwesomeIcons
+                                                                    .heart,
+                                                                size: 20,
+                                                                color: Colors
+                                                                    .red)),
                                                   ],
                                                 ),
                                               ),
@@ -434,6 +555,33 @@ ScrollController commentscroll = ScrollController();
                                                         SlideRightRoute(
                                                             widget: Scaffold(
                                                           appBar: AppBar(
+                                                            actions: [
+                                                              TextButton(onPressed:(){
+                                                                Navigator.push(context,MaterialPageRoute(builder:(context)=>Scaffold(
+                                                                  body: ListView.builder(itemBuilder: (context,ind)=>StreamBuilder(
+                                                                    stream: FirebaseFirestore.instance.collection("users").doc("${data[index]["likes"][ind]}").snapshots(),
+                                                                    builder:(context,snap)=>!snap.hasData?Center(
+                                                                        child:Column(
+                                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                                          children: [
+                                                                            Lottie.asset("assets/Lottie/Gloading.json",height: height/10),
+                                                                            // Text("Loading...",style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: height/30,color: Colors.purple),)
+                                                                          ],
+                                                                        )
+                                                                    ): ListTile(isThreeLine: true,subtitle: Text("${snap.data["username"]}"),
+                                                                      leading:CircleAvatar(backgroundImage: AssetImage("assets/Images/profilepic.jpg"),),
+                                                                      title: Text("${snap.data["full_name"]}"),),
+                                                                  ),itemCount: data[index]["likes"].length,),
+                                                                ) ));
+
+                                                              }, child: Row(children: [Text("View Likes ${data[index]["likes"].length}",style: TextStyle(color: Colors.white),),Icon(
+                                                                  FontAwesomeIcons
+                                                                      .solidHeart,
+                                                                  size: 20,
+                                                                  color:
+                                                                  Colors.red)],)),
+                                                              SizedBox(width: 20,)
+                                                            ],
                                                             title: Text(
                                                                 "Comments"),
                                                             elevation: 0,
@@ -501,19 +649,38 @@ ScrollController commentscroll = ScrollController();
                                                                     if (_formkey
                                                                         .currentState
                                                                         .validate()) {
-                                                                      await FirebaseFirestore.instance.collection("post").doc("${data[index].reference.id}").update({
-                                                                        "comments":FieldValue.arrayUnion([
+                                                                      await FirebaseFirestore
+                                                                          .instance
+                                                                          .collection(
+                                                                              "post")
+                                                                          .doc(
+                                                                              "${data[index].reference.id}")
+                                                                          .update({
+                                                                        "comments":
+                                                                            FieldValue.arrayUnion([
                                                                           {
-                                                                            "profile_img_url":profileimg_url,
-                                                                            "text":comment.text,
-                                                                            "username":username,
-                                                                            "timestamp":DateTime.now().microsecondsSinceEpoch,
+                                                                            "profile_img_url":
+                                                                                profileimg_url,
+                                                                            "text":
+                                                                                comment.text,
+                                                                            "username":
+                                                                                username,
+                                                                            "timestamp":
+                                                                                DateTime.now().microsecondsSinceEpoch,
                                                                           }
                                                                         ])
                                                                       });
-                                                                      comment.clear();
-                                                                      commentscroll.animateTo(commentscroll.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-
+                                                                      comment
+                                                                          .clear();
+                                                                      commentscroll.animateTo(
+                                                                          commentscroll
+                                                                              .position
+                                                                              .maxScrollExtent,
+                                                                          duration: Duration(
+                                                                              milliseconds:
+                                                                                  300),
+                                                                          curve:
+                                                                              Curves.easeOut);
 
                                                                       await Future.delayed(Duration(
                                                                           milliseconds:
@@ -531,68 +698,116 @@ ScrollController commentscroll = ScrollController();
                                                             ],
                                                           ),
                                                           body: Container(
-                                                            child: StreamBuilder(
-                                                              stream: FirebaseFirestore.instance.collection("post").doc("${data[index].reference.id}").snapshots(),
-                                                              builder: (context,snap){
-
-                                                                if(!snap.hasData){
+                                                            child:
+                                                                StreamBuilder(
+                                                              stream: FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "post")
+                                                                  .doc(
+                                                                      "${data[index].reference.id}")
+                                                                  .snapshots(),
+                                                              builder: (context,
+                                                                  snap) {
+                                                                if (!snap
+                                                                    .hasData) {
                                                                   return Center(
-                                                                      child:Column(
-                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                        children: [
-                                                                          Lottie.asset("assets/Lottie/Gloading.json",height: height/10),
-                                                                          // Text("Loading...",style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: height/30,color: Colors.purple),)
-                                                                        ],
-                                                                      )
-                                                                  );
-
-                                                                }else if(snap.data["comments"].length<=0){
+                                                                      child:
+                                                                          Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Lottie.asset(
+                                                                          "assets/Lottie/Gloading.json",
+                                                                          height:
+                                                                              height / 10),
+                                                                      // Text("Loading...",style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: height/30,color: Colors.purple),)
+                                                                    ],
+                                                                  ));
+                                                                } else if (snap
+                                                                        .data[
+                                                                            "comments"]
+                                                                        .length <=
+                                                                    0) {
                                                                   return Center(
-                                                                    child: Text("No Comments"),
+                                                                    child: Text(
+                                                                        "No Comments"),
                                                                   );
-                                                                }
-
-                                                                else{
-                                                                  print(snap.data["comments"].length);
-                                                                  var data = snap.data["comments"];
-                                                                  return ListView.separated(
-                                                                      controller: commentscroll,
-                                                                      shrinkWrap: true,
-                                                                      itemBuilder: (context,index)=>Container(
-                                                                        margin: EdgeInsets.all(5),
-                                                                        child: Column(
-                                                                          children: [
-                                                                            Row(
-
-                                                                              children: [
-                                                                                CircleAvatar(
-                                                                                    backgroundColor: Colors.white,
-                                                                                    radius: 20,
-                                                                                    child:data[index]["profile_img_url"]!=null?Container(
-                                                                                        height: kIsWeb?70:64,
-                                                                                        width:70,
-                                                                                        decoration: BoxDecoration(color:Colors.teal,borderRadius: BorderRadius.circular(100),image: DecorationImage(
-                                                                                            fit: BoxFit.fill,
-                                                                                            image:Image.network("${data[index]["profile_img_url"]}",fit: BoxFit.fill,).image))):Icon(Icons.person_pin)),
-                                                                                SizedBox(width: 20,height: 30,),
-                                                                                Column(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                } else {
+                                                                  print(snap
+                                                                      .data[
+                                                                          "comments"]
+                                                                      .length);
+                                                                  var data = snap
+                                                                          .data[
+                                                                      "comments"];
+                                                                  return ListView
+                                                                      .separated(
+                                                                          controller:
+                                                                              commentscroll,
+                                                                          shrinkWrap:
+                                                                              true,
+                                                                          itemBuilder: (context, index) =>
+                                                                              Container(
+                                                                                margin: EdgeInsets.all(5),
+                                                                                child: Column(
                                                                                   children: [
-                                                                                    Text("${data[index]["username"]}",style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14),),
-                                                                                    Text("${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"],isUtc: false).toString().substring(0,16)}",style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 10),)
+                                                                                    Row(
+                                                                                      children: [
+                                                                                        CircleAvatar(
+                                                                                            backgroundColor: Colors.white,
+                                                                                            radius: 20,
+                                                                                            child: data[index]["profile_img_url"] != null
+                                                                                                ? Container(
+                                                                                                    height: kIsWeb ? 70 : 64,
+                                                                                                    width: 70,
+                                                                                                    decoration: BoxDecoration(
+                                                                                                        color: Colors.teal,
+                                                                                                        borderRadius: BorderRadius.circular(100),
+                                                                                                        image: DecorationImage(
+                                                                                                            fit: BoxFit.fill,
+                                                                                                            image: Image.network(
+                                                                                                              "${data[index]["profile_img_url"]}",
+                                                                                                              fit: BoxFit.fill,
+                                                                                                            ).image)))
+                                                                                                : Icon(Icons.person_pin)),
+                                                                                        SizedBox(
+                                                                                          width: 20,
+                                                                                          height: 30,
+                                                                                        ),
+                                                                                        Column(
+                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                          children: [
+                                                                                            Text(
+                                                                                              "${data[index]["username"]}",
+                                                                                              style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14),
+                                                                                            ),
+                                                                                            Text(
+                                                                                              "${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"], isUtc: false).toString().substring(0, 16)}",
+                                                                                              style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 10),
+                                                                                            )
+                                                                                          ],
+                                                                                        )
+                                                                                      ],
+                                                                                    ),
+                                                                                    Container(
+                                                                                      alignment: Alignment.topCenter,
+                                                                                      child: Text(
+                                                                                        "${data[index]["text"]}",
+                                                                                        style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 16),
+                                                                                      ),
+                                                                                    )
                                                                                   ],
-                                                                                )
-                                                                              ],
-                                                                            ),
-                                                                            Container(
-                                                                              alignment: Alignment.topCenter,
-                                                                              child: Text("${data[index]["text"]}",style:Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 16),),
-                                                                            )
-                                                                          ],
-                                                                        ),
-                                                                      ), separatorBuilder: (context, index) => Divider(
-                                                                    thickness: 1,
-                                                                  ), itemCount: snap.data["comments"].length);
+                                                                                ),
+                                                                              ),
+                                                                          separatorBuilder: (context, index) =>
+                                                                              Divider(
+                                                                                thickness: 1,
+                                                                              ),
+                                                                          itemCount: snap
+                                                                              .data["comments"]
+                                                                              .length);
                                                                 }
                                                               },
                                                             ),
@@ -604,12 +819,12 @@ ScrollController commentscroll = ScrollController();
                                                     size: 20,
                                                     color: Colors.cyan,
                                                   )),
-                                              GestureDetector(
-                                                  onTap: () {},
-                                                  child: Icon(
-                                                      Icons.share_rounded,
-                                                      size: 25,
-                                                      color: Colors.cyan)),
+                                              // GestureDetector(
+                                              //     onTap: () {},
+                                              //     child: Icon(
+                                              //         Icons.share_rounded,
+                                              //         size: 25,
+                                              //         color: Colors.cyan)),
                                               SizedBox(
                                                 width: 5,
                                               )
@@ -624,52 +839,73 @@ ScrollController commentscroll = ScrollController();
                         }),
                   ),
                 ),
-               FirebaseAuth.instance.currentUser.email.substring(0,2)=="s1" || FirebaseAuth.instance.currentUser.email.substring(0,2)=="s2"?FloatingActionButton.extended(
-                 heroTag: "sending_post",
-                 icon: Icon(Icons.add_a_photo,),
-                 label: Text("Post Something"),
-                 onPressed: () {
-                   Provider.of<BusyButtonModel>(context, listen: false)
-                       .setBusy = false;
-                   Provider.of<GetImage>(context, listen: false).myfile = null;
-                   Navigator.push(
-                       context,
-                       SlideRightRoute(
-                           widget: CreatePost(username, profileimg_url)));
-                 },
-               ):Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 children: [
-                   FloatingActionButton.extended(
-                     heroTag: "sending_post",
-                     icon: Icon(Icons.add_a_photo,),
-                     label: Text("Post Something"),
-                     onPressed: () {
-                       Provider.of<BusyButtonModel>(context, listen: false)
-                           .setBusy = false;
-                       Provider.of<GetImage>(context, listen: false).myfile = null;
-                       Navigator.push(
-                           context,
-                           SlideRightRoute(
-                               widget: CreatePost(username, profileimg_url)));
-                     },
-                   ),
-                   FloatingActionButton.extended(
-                     backgroundColor: Colors.teal,
-                     heroTag: "alert-button",
-                     icon: Icon(Icons.report_problem_outlined,),
-                     label: Text("Add Alert"),
-                     onPressed: () {
-                       Provider.of<BusyButtonModel>(context, listen: false)
-                           .setBusy = false;
-                       Provider.of<GetImage>(context, listen: false).myfile = null;
-                       Navigator.push(
-                           context,
-                           SlideRightRoute(
-                               widget: CreateAlert(username, profileimg_url)));
-                     },
-                   )
-                 ],),
+                FirebaseAuth.instance.currentUser.email.substring(0, 2) ==
+                            "s1" ||
+                        FirebaseAuth.instance.currentUser.email
+                                .substring(0, 2) ==
+                            "s2"
+                    ? FloatingActionButton.extended(
+                        heroTag: "sending_post",
+                        icon: Icon(
+                          Icons.add_a_photo,
+                        ),
+                        label: Text("Post Something"),
+                        onPressed: () {
+                          Provider.of<BusyButtonModel>(context, listen: false)
+                              .setBusy = false;
+                          Provider.of<GetImage>(context, listen: false).myfile =
+                              null;
+                          Navigator.push(
+                              context,
+                              SlideRightRoute(
+                                  widget:
+                                      CreatePost(username, profileimg_url)));
+                        },
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FloatingActionButton.extended(
+                            heroTag: "sending_post",
+                            icon: Icon(
+                              Icons.add_a_photo,
+                            ),
+                            label: Text("Post Something"),
+                            onPressed: () {
+                              Provider.of<BusyButtonModel>(context,
+                                      listen: false)
+                                  .setBusy = false;
+                              Provider.of<GetImage>(context, listen: false)
+                                  .myfile = null;
+                              Navigator.push(
+                                  context,
+                                  SlideRightRoute(
+                                      widget: CreatePost(
+                                          username, profileimg_url)));
+                            },
+                          ),
+                          FloatingActionButton.extended(
+                            backgroundColor: Colors.teal,
+                            heroTag: "alert-button",
+                            icon: Icon(
+                              Icons.report_problem_outlined,
+                            ),
+                            label: Text("Add Alert"),
+                            onPressed: () {
+                              Provider.of<BusyButtonModel>(context,
+                                      listen: false)
+                                  .setBusy = false;
+                              Provider.of<GetImage>(context, listen: false)
+                                  .myfile = null;
+                              Navigator.push(
+                                  context,
+                                  SlideRightRoute(
+                                      widget: CreateAlert(
+                                          username, profileimg_url)));
+                            },
+                          )
+                        ],
+                      ),
               ])),
         ),
       ),
@@ -733,9 +969,10 @@ class _CreatePostState extends State<CreatePost> {
         "image_url": Storage_location,
         "username": widget.username,
         "profile_img": widget.profileimg_url,
-        "timestamp":DateTime.now().microsecondsSinceEpoch,
-        "comments":[],
-        "likes":[],
+        "timestamp": DateTime.now().microsecondsSinceEpoch,
+        "comments": [],
+        "likes": [],
+        "email":FirebaseAuth.instance.currentUser.email
       });
       await FirebaseFirestore.instance
           .collection("post")
@@ -745,9 +982,10 @@ class _CreatePostState extends State<CreatePost> {
         "image_url": Storage_location,
         "username": widget.username,
         "profile_img": widget.profileimg_url,
-        "timestamp":DateTime.now().microsecondsSinceEpoch,
-        "comments":[],
-        "likes":[]
+        "timestamp": DateTime.now().microsecondsSinceEpoch,
+        "comments": [],
+        "likes": [],
+        "email":FirebaseAuth.instance.currentUser.email
       });
     } catch (e) {
       print("${e} there is an error");
@@ -865,10 +1103,6 @@ class _CreatePostState extends State<CreatePost> {
   }
 }
 
-
-
-
-
 class CreateAlert extends StatefulWidget {
   String username, profileimg_url;
   CreateAlert(this.username, this.profileimg_url);
@@ -907,13 +1141,16 @@ class _CreateAlertState extends State<CreateAlert> {
         "image_url": Storage_location,
         "username": widget.username,
         "profile_img": widget.profileimg_url,
-        "timestamp":DateTime.now().microsecondsSinceEpoch,
-        "comments":[],
-        "likes":[],
+        "timestamp": DateTime.now().microsecondsSinceEpoch,
+        "comments": [],
+        "likes": [],
       });
-      await FirebaseFirestore.instance.collection("Notifications").doc(FirebaseAuth.instance.currentUser.email).set({
-        "Notification":"Alert From ${username}",
-        "email":FirebaseAuth.instance.currentUser.email,
+      await FirebaseFirestore.instance
+          .collection("Notifications")
+          .doc(FirebaseAuth.instance.currentUser.email)
+          .set({
+        "Notification": "Alert From ${username}",
+        "email": FirebaseAuth.instance.currentUser.email,
       });
     } catch (e) {
       print("${e} there is an error");
@@ -1012,7 +1249,8 @@ class _CreateAlertState extends State<CreateAlert> {
                             bool checker = await sendData() ?? false;
                             if (checker) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Added Succefully:)")));
+                                  SnackBar(
+                                      content: Text("Added Succefully:)")));
                               Navigator.pop(context);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

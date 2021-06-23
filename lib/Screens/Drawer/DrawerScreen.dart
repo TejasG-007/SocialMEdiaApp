@@ -202,43 +202,8 @@ class _DrawerScreenState extends State<DrawerScreen> with TickerProviderStateMix
           ),
           Row(
             children: [
-              Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              width > 700
-                  ? MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                          onTap: () {},
-                          child: Text(
-                            'Settings',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                .copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                          )))
-                  : Text(
-                      'Settings',
-                      style: Theme.of(context).textTheme.bodyText2.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-              SizedBox(
-                width: 10,
-              ),
-              Container(
-                width: 2,
-                height: 20,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 10,
-              ),
+              SizedBox(width: 80,),
+              Icon(Icons.exit_to_app_rounded,color: Colors.white,),
               width > 700
                   ? MouseRegion(
                       cursor: SystemMouseCursors.click,

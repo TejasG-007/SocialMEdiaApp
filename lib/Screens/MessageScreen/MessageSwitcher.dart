@@ -27,7 +27,7 @@ class _MessageSwitcherState extends State<MessageSwitcher> {
           children: [
            Consumer<MessageModel>(builder: (context,model,child){
 
-             return UserMessageScreen(data: model.data,username: model.username,);},),
+             return model.data!=null && model.username!=null ? UserMessageScreen(data: model.data,username: model.username,):Container();},),
             MessageScreen(),
           ],
         ),),

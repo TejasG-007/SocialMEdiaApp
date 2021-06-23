@@ -175,7 +175,7 @@ class _EditProfileState extends State<EditProfile> {
                                           padding:EdgeInsets.all(5),
                                           child:Text("To Make Any Required Modifications in Profile info Please Mail Us on admin@tejasg.me",style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.red,fontSize: 14),),
                                           constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context).size.width*0.7
+                                            maxWidth:kIsWeb?MediaQuery.of(context).size.width*0.2:MediaQuery.of(context).size.width*0.7
                                           ),
                                         )
                                       ],),

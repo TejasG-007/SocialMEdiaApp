@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class MessageModel extends ChangeNotifier{
@@ -7,26 +7,34 @@ var data,username,othersusername;
 var queryresultset =[];
 var tempsearchstore = [];
 
-userSearch(String value ){
+userSearch(String value )async{
 
   if(value.length==0){
     queryresultset = [];
     tempsearchstore =[];
+    notifyListeners();
   }
   var capitalizedValue = value.substring(0,1).toUpperCase()+value.substring(1);
 
   if(queryresultset.length == 0 && value.length ==1){
-    Searchuser(value).then((snap){
-      for(int itr=0;itr<snap.docs.length;itr++){
-        queryresultset.add(snap.docs[itr].data());
-      }
 
-    });
+  // .where("searchkey",isEqualTo:value.substring(0,1).toUpperCase())
+
+    await FirebaseFirestore.instance.collection("users").snapshots().listen((event){
+        for(int itr=0;itr<event.docs.length;itr++){
+          queryresultset.add(event.docs[itr].data());
+          // print(queryresultset);
+          notifyListeners();
+        }
+      });
+
+
   }else{
     tempsearchstore = [];
     queryresultset.forEach((element) {
       if(element["full_name"].toString().startsWith(capitalizedValue)){
         tempsearchstore.add(element);
+        tempsearchstore = tempsearchstore.toSet().toList();
         notifyListeners();
       }
     });
@@ -36,10 +44,6 @@ userSearch(String value ){
 }
 
 
-Searchuser(String value)async{
-
-  return await FirebaseFirestore.instance.collection("users").where("searchkey",isEqualTo:value.substring(0,1).toUpperCase()).get();
-}
 
 
 
