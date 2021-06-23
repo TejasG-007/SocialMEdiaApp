@@ -391,7 +391,7 @@ class _GettingStartedState extends State<GettingStarted> {
                        "username": username.text.toLowerCase(),
                        "full_name": full_name.text.substring(0,1).toUpperCase()+full_name.text.substring(1),
                        "DOB": dob.text,
-                       "searchKey":full_name.text.substring(0,1).toUpperCase(),
+                       "searchkey":full_name.text.substring(0,1).toUpperCase(),
                        "profile_img_url": profile_img_url,
                        "gender": Provider.of<GenderSelection>(context, listen: false)
                            .gender,
@@ -407,7 +407,7 @@ class _GettingStartedState extends State<GettingStarted> {
                          "username": username.text,
                          "gender": Provider.of<GenderSelection>(context, listen: false)
                              .gender,
-                         "searchKey":full_name.text.substring(0,1).toUpperCase(),
+                         "searchkey":full_name.text.substring(0,1).toUpperCase(),
                          "full_name": full_name.text.substring(0,1).toUpperCase()+full_name.text.substring(1),
                          "DOB": dob.text,
                          "getting_started": true,
