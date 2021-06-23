@@ -464,7 +464,23 @@ class _FriendsState extends State<Friends> {
                                                           ],
                                                         )
                                                     ): ListTile(isThreeLine: true,subtitle: Text("${snap.data["username"]}"),
-                                                      leading:CircleAvatar(backgroundImage: AssetImage("assets/Images/profilepic.jpg"),),
+                                                      leading:CircleAvatar(
+                                                          backgroundColor: Colors.white,
+                                                          radius: 20,
+                                                          child: snap.data["profile_img_url"] != null
+                                                              ? Container(
+                                                              height: kIsWeb ? 70 : 64,
+                                                              width: 70,
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors.teal,
+                                                                  borderRadius: BorderRadius.circular(100),
+                                                                  image: DecorationImage(
+                                                                      fit: BoxFit.fill,
+                                                                      image: Image.network(
+                                                                        "${snap.data["profile_img_url"]}",
+                                                                        fit: BoxFit.fill,
+                                                                      ).image)))
+                                                              : Icon(Icons.person_pin)),
                                                       title: Text("${snap.data["full_name"]}"),),
                                                   ),itemCount: data[index]["likes"].length,),
                                                 ) ));
