@@ -1143,13 +1143,14 @@ class _CreateAlertState extends State<CreateAlert> {
         "profile_img": widget.profileimg_url,
         "timestamp": DateTime.now().microsecondsSinceEpoch,
         "comments": [],
-        "likes": [],
+        "likes": [],"email": FirebaseAuth.instance.currentUser.email,
+
       });
       await FirebaseFirestore.instance
           .collection("Notifications")
           .doc(FirebaseAuth.instance.currentUser.email)
           .set({
-        "Notification": "Alert From ${username}",
+        "Notification": "Alert From ${widget.username}",
         "email": FirebaseAuth.instance.currentUser.email,
       });
     } catch (e) {
@@ -1250,7 +1251,7 @@ class _CreateAlertState extends State<CreateAlert> {
                             if (checker) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content: Text("Added Succefully:)")));
+                                      content: Text("Alert Added Succefully:)")));
                               Navigator.pop(context);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

@@ -109,18 +109,76 @@ class _FriendsState extends State<Friends> {
                                       crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            "${data[index]["username"]}",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline2
-                                                .copyWith(
-                                                fontSize: 16,
-                                                color: Colors.black),
-                                          ),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${data[index]["username"]}",
+                                              style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14),
+                                            ),
+                                            Text(
+                                              "${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"], isUtc: false).toString().substring(0, 16)}",
+                                              style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 10),
+                                            )
+                                          ],
                                         ),
+                                        data[index]["email"]==FirebaseAuth.instance.currentUser.email?PopupMenuButton(itemBuilder: (context)=>[
+                                          PopupMenuItem(
+
+                                              child: GestureDetector(
+                                                  onTap:()async{
+                                                    return showDialog(context: context, builder:(context){
+                                                      return AlertDialog(
+                                                        content: Text("Do you really want to delete this Alert ?"),
+                                                        actions: [
+                                                          TextButton(onPressed: ()async{
+                                                            await FirebaseFirestore.instance.collection("Alert").doc(data[index].reference.id).delete().then((value) {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              showDialog(
+                                                                  context: context,
+                                                                  builder: (
+                                                                      context) =>
+
+                                                                      AlertDialog(
+                                                                        content: Column(
+                                                                          mainAxisSize: MainAxisSize.min,
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons
+                                                                                  .done,
+                                                                              color: Colors
+                                                                                  .green,
+                                                                              size: height /
+                                                                                  8,),
+                                                                            SizedBox(
+                                                                              height: 5,),
+                                                                            Text(
+                                                                                "Succesfully Deleted")
+                                                                          ],),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                              onPressed: () {
+                                                                                Navigator
+                                                                                    .pop(
+                                                                                    context);
+                                                                              },
+                                                                              child: Text(
+                                                                                  "Close"))
+                                                                        ],
+                                                                      )
+                                                              );
+                                                            });
+                                                          }, child:Text("Yes")),
+                                                          TextButton(onPressed: (){
+                                                            Navigator.pop(context);
+                                                          }, child:Text("No")),
+                                                        ],
+                                                      );
+                                                    });
+                                                  },
+                                                  child: Container(child: Row(children: [Icon(Icons.delete),SizedBox(width: 10,),Text("Delete Alert")],),)))
+                                        ]):Container(),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
