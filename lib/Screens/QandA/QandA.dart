@@ -288,7 +288,7 @@ class _QandAViewState extends State<QandAView> {
                                                           );
                                                         });
                                                       },
-                                                      child: Container(child: Row(children: [Icon(Icons.delete),SizedBox(width: 10,),Text("Delete Question")],),)))
+                                                      child: Container(child: Row(children: [Icon(Icons.delete,color: Colors.red,),SizedBox(width: 10,),Text("Delete Question")],),)))
                                             ]):Container(),
                                           ],),
                                         Padding(
@@ -480,7 +480,7 @@ class _QandAViewState extends State<QandAView> {
                                                                   "Answers"),
                                                               elevation: 0,
                                                               backgroundColor:
-                                                              Colors.cyan,
+                                                              Colors.teal,
                                                             ),
                                                             bottomSheet: Row(
                                                               children: [
@@ -686,10 +686,11 @@ class _QandAViewState extends State<QandAView> {
                                                                                     ],
                                                                                   ),
                                                                                   Container(
-                                                                                    alignment: Alignment.topCenter,
+                                                                                    alignment: Alignment.topLeft,
+                                                                                    margin: EdgeInsets.only(top: 4,left: 50),
                                                                                     child: Text(
                                                                                       "${data[index]["text"]}",
-                                                                                      style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 16),
+                                                                                      style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 14),
                                                                                     ),
                                                                                   )
                                                                                 ],

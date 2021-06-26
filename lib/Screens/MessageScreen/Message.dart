@@ -113,10 +113,6 @@ class _MessageScreenState extends State<MessageScreen> {
                                                     decoration: InputDecoration(
                                                       hintText: "Search User",
                                                         prefixIcon:Icon(Icons.search_outlined,color: Colors.teal,),
-                                                        suffixIcon: GestureDetector(
-
-                                                          child: Icon(Icons.send,color: Colors.teal,),
-                                                        ),
                                                         border: OutlineInputBorder(
                                                             borderRadius:
                                                                 BorderRadius.circular(

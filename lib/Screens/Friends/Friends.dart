@@ -278,7 +278,7 @@ class _FriendsState extends State<Friends> {
                                                                   "Comments"),
                                                               elevation: 0,
                                                               backgroundColor:
-                                                              Colors.cyan,
+                                                              Colors.teal,
                                                             ),
                                                             bottomSheet: Row(
                                                               children: [

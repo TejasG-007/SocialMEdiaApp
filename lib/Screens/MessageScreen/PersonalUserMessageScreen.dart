@@ -24,34 +24,71 @@ class _UserMessageScreenState extends State<UserMessageScreen> {
 
 TextEditingController text = TextEditingController();
 
-    Sender(text)=>Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.end,children: [ChatBubble(
-        child: Container(
-          constraints: BoxConstraints(
-            maxWidth: kIsWeb?MediaQuery.of(context).size.width * 0.2:MediaQuery.of(context).size.width * 0.7,
-          ),
-          child:Text(text,style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white,fontSize: 15)),
-        ),backGroundColor: Colors.teal,
-        clipper: ChatBubbleClipper10(type: BubbleType.sendBubble),
-      )],),
-    );
-    Receiver(text)=>Padding(
+    Sender(text,timestamp){
+      int time = int.parse(timestamp);
+      return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [ChatBubble(
-            backGroundColor: Colors.purple,
-            clipper: ChatBubbleClipper10(
-                type: BubbleType.receiverBubble),
-            child:Container(
-              constraints: BoxConstraints(
-                maxWidth: kIsWeb?MediaQuery.of(context).size.width * 0.2:MediaQuery.of(context).size.width * 0.7,
+        child: Row(mainAxisAlignment: MainAxisAlignment.end,children: [
+
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            //mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ChatBubble(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: kIsWeb?MediaQuery.of(context).size.width * 0.2:MediaQuery.of(context).size.width * 0.7,
+                  ),
+                  child:Text(text,style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white,fontSize: 15)),
+                ),backGroundColor: Colors.teal,
+                clipper: ChatBubbleClipper10(type: BubbleType.sendBubble),
               ),
-              child:Text(text,style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white,fontSize: 15)),
-            ),
-          ),
-          ],));
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text("${DateTime.fromMicrosecondsSinceEpoch(time).toString().substring(10,16)}")
+                ],
+              )
+            ],
+          )
+
+
+        ],),
+      );
+    }
+    Receiver(text,timestamp){
+      int time = int.parse(timestamp);
+      return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+
+              Column(
+                children: [
+                  ChatBubble(
+                    backGroundColor: Colors.purple,
+                    clipper: ChatBubbleClipper10(
+                        type: BubbleType.receiverBubble),
+                    child:Container(
+                      constraints: BoxConstraints(
+                        maxWidth: kIsWeb?MediaQuery.of(context).size.width * 0.2:MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      child:Text(text,style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white,fontSize: 15)),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text("${DateTime.fromMicrosecondsSinceEpoch(time).toString().substring(10,16)}")
+                    ],
+                  )
+
+                ],
+              )
+
+            ],));
+    }
 
 
 
@@ -185,7 +222,8 @@ ScrollController scroll_controller = ScrollController();
             return Padding(padding: const EdgeInsets.only(bottom: 100),child: ListView.builder(
               controller: scroll_controller,
                 itemCount: data.length,
-                itemBuilder: (context,index)=>FirebaseAuth.instance.currentUser.uid!=data[index]["uid"]?Receiver("${data[index]["text"]}"):Sender("${data[index]["text"]}")),);
+                itemBuilder: (context,index){
+                return FirebaseAuth.instance.currentUser.uid!=data[index]["uid"]?Receiver("${data[index]["text"]}","${data[index]["timestamp"]}"):Sender("${data[index]["text"]}",data[index]["timestamp"]);}),);
 
           }
         },
@@ -273,7 +311,9 @@ Widget DesktopView(BuildContext context) {
                       shrinkWrap: true,
                       controller: scroll_controller,
                       itemCount: data.length,
-                      itemBuilder: (context,index)=>FirebaseAuth.instance.currentUser.uid!=data[index]["uid"]?Receiver("${data[index]["text"]}"):Sender("${data[index]["text"]}")),);
+                      itemBuilder: (context,index){
+                        return
+                        FirebaseAuth.instance.currentUser.uid!=data[index]["uid"]?Receiver("${data[index]["text"]}",data[index]["timestamp"]):Sender("${data[index]["text"]}",data[index]["timestamp"]);},));
 
                 }
             },

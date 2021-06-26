@@ -555,6 +555,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                                         SlideRightRoute(
                                                             widget: Scaffold(
                                                           appBar: AppBar(
+
                                                             actions: [
                                                               TextButton(onPressed:(){
                                                                 Navigator.push(context,MaterialPageRoute(builder:(context)=>Scaffold(
@@ -602,7 +603,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                                                 "Comments"),
                                                             elevation: 0,
                                                             backgroundColor:
-                                                                Colors.cyan,
+                                                                Colors.teal,
                                                           ),
                                                           bottomSheet: Row(
                                                             children: [
@@ -766,7 +767,9 @@ class _FeedScreenState extends State<FeedScreen> {
                                                                               true,
                                                                           itemBuilder: (context, index) =>
                                                                               Container(
-                                                                                margin: EdgeInsets.all(5),
+
+                                                                                margin: EdgeInsets.only(top: 4,left: 5),
+                                                                                padding: EdgeInsets.only(bottom:2),
                                                                                 child: Column(
                                                                                   children: [
                                                                                     Row(
@@ -800,18 +803,20 @@ class _FeedScreenState extends State<FeedScreen> {
                                                                                               style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14),
                                                                                             ),
                                                                                             Text(
-                                                                                              "${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"], isUtc: false).toString().substring(0, 16)}",
+                                                                                              "${DateTime.fromMicrosecondsSinceEpoch(data[index]["timestamp"] as int, isUtc: false).toString().substring(0, 16)}",
                                                                                               style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 10),
                                                                                             )
                                                                                           ],
                                                                                         )
                                                                                       ],
                                                                                     ),
+                                                                                    SizedBox(height: 10,),
                                                                                     Container(
-                                                                                      alignment: Alignment.topCenter,
+                                                                                      margin: EdgeInsets.only(top: 4,left: 50),
+                                                                                      alignment: Alignment.topLeft,
                                                                                       child: Text(
                                                                                         "${data[index]["text"]}",
-                                                                                        style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 16),
+                                                                                        style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 14),
                                                                                       ),
                                                                                     )
                                                                                   ],
